@@ -114,7 +114,10 @@ def detect(save_img=False):
                 # Print results
                 for c in det[:, -1].unique():
                     n = (det[:, -1] == c).sum()  # detections per class
-                    s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
+                    try:
+                        s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "
+                    except IndexError:
+                        s += f"{n} object, "
 
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
@@ -125,8 +128,8 @@ def detect(save_img=False):
                             f.write(('%g ' * len(line)).rstrip() % line + '\n')
 
                     if save_img or view_img:  # Add bbox to image
-                        label = f'{names[int(cls)]} {conf:.2f}'
-                        plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=1)
+                        label = f'object {conf:.2f}'
+                        plot_one_box(xyxy, im0, label=label, color=[255, 0, 0], line_thickness=1)
 
             # Print time (inference + NMS)
             print(f'{s}Done. ({(1E3 * (t2 - t1)):.1f}ms) Inference, ({(1E3 * (t3 - t2)):.1f}ms) NMS')
